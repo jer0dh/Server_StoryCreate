@@ -114,6 +114,11 @@ log4j.main = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+
+   debug   'grails.app.controllers',
+		   'grails.app.conf',
+		   'grails.app.domain',
+		   'grails.app.services'
 }
 
 
@@ -136,7 +141,7 @@ grails.plugin.springsecurity.interceptUrlMap = [
 	'/**/favicon.ico':                ['permitAll']
 ]
 grails.plugin.springsecurity.filterChain.chainMap = [
-//	'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter',  // Stateless chain
+	'/api/**': 'JOINED_FILTERS,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter',  // Stateless chain
 	'/**': 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'                                          // Traditional chain
 ]
 grails.plugin.springsecurity.rest.token.storage.useGorm	= true
