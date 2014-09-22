@@ -26,7 +26,7 @@ class BootStrap {
 			}
 		}
 		
-		// Change the format for a list of Stories JSON
+		// Default JSON representation of Story
 		JSON.registerObjectMarshaller(Story) { Story s ->
 			   return [ id 				: 		s.id,
 					   title			:		s.title,
@@ -43,7 +43,7 @@ class BootStrap {
 					   ]
 		   }
 
-		// Marshaller used for the list of stories
+		// JSON format used for the list of stories
 		JSON.createNamedConfig("storyList") { cfg ->
 			 cfg.registerObjectMarshaller(Story) { Story s ->
 				return [ id 			: 		s.id,
@@ -56,7 +56,28 @@ class BootStrap {
 			}
 		}
 
-
+		// Default JSON representation of User
+			JSON.registerObjectMarshaller(User) { User u ->
+			   return [ id 				: 		u.id,
+					   username			:		u.username,
+					   fullName			:		u.profile?.fullName,
+					   bio				:		u.profile?.bio,
+					   homepage			:		u.profile?.homepage,
+					   country			:		u.profile?.country  ]
+		   }
+		// JSON format for User for Admin users (includes email address)
+		JSON.createNamedConfig("userListForAdmin") { cfg ->
+			cfg.registerObjectMarshaller(User) { User u ->
+			   return [ id 				: 		u.id,
+					   username			:		u.username,
+					   fullName			:		u.profile?.fullName,
+					   email			:		u.profile?.email,
+					   bio				:		u.profile?.bio,
+					   homepage			:		u.profile?.homepage,
+					   country			:		u.profile?.country  ]
+		   }
+	   }
+		
     }
     def destroy = {
     }
