@@ -13,7 +13,8 @@ class BootStrap {
 			def userRole = new Role(authority: "ROLE_user").save(failOnError: true)
 			new UserRole(user: adminUser, role: adminRole).save(failOnError:true)
 			new UserRole(user: userUser, role: userRole).save(failOnError:true, flush:true)
-			new Profile( user: adminUser, email:'j.hammer@yahoo.com', bio:'I created this', fullName: 'Jerod Hammerstein')
+			new Profile( user: adminUser, email:'j.hammer@yahoo.com', bio:'I created this', fullName: 'Jerod Hammerstein').save(failOnError: true)
+			new Profile (user: userUser, email:'joe@yahoo.com').save(failOnError:true, flush: true)
 			if (Story.count() == 0) {
 				def story1 = new Story(title: "The very First Story", isPublic : true, owner: adminUser, description:"The first is usually the best").save(failOnError: true)
 				def story2 = new Story(title: "The Storm", isPublic : true, owner: userUser, description:"It all started on dark and stormy night").save(failOnError: true)

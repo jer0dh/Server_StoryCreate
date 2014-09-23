@@ -34,7 +34,14 @@ class UserRestController extends RestfulController{
 			respond currentUser
 			}
 		} else {
-			respond User.get(params.id)
+			// if ROLE_admin user, then respond with JSON that has email
+			if (SpringSecurityUtils.ifAllGranted("ROLE_admin")){
+				JSON.use("userListForAdmin") {
+					respond User.get(params.id)
+					}
+			} else {
+				respond User.get(params.id)
+			}
 		}
 	}
 	
