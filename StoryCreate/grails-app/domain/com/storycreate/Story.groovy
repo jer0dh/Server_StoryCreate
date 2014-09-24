@@ -6,7 +6,7 @@ class Story {
 	Date lastUpdated
 	String description
 	Boolean isPublic
-	List storyContent
+	List storyContent = []
 	User owner
 	
 	static hasMany = [storyContent : StoryContent ]

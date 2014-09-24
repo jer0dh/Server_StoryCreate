@@ -31,9 +31,11 @@ class BootStrap {
 		JSON.registerObjectMarshaller(Story) { Story s ->
 			   return [ id 				: 		s.id,
 					   title			:		s.title,
+					   owner			:		[id : s.owner.id, name : s.owner.profile?.fullName ?: s.owner.username],
 					   dateCreated		:		s.dateCreated,
 					   lastUpdated		:		s.lastUpdated,
 					   isPublic			:		s.isPublic,
+					   authors			:		s.storyContent.collect {sc-> sc.user.profile?.fullName ?: sc.user.username}.unique(),
 					   storyContent		:  		s.storyContent.collect {sc ->
 									   [	user		 	: 	sc.user.profile?.fullName ?: sc.user.username,
 										    userId			:	sc.user.id,
@@ -49,7 +51,7 @@ class BootStrap {
 			 cfg.registerObjectMarshaller(Story) { Story s ->
 				return [ id 			: 		s.id,
 						title			:		s.title,
-						owner			:		s.owner.profile?.fullName ?: s.owner.username,
+						owner			:		[id : s.owner.id, name : s.owner.profile?.fullName ?: s.owner.username],
 						dateCreated		:		s.dateCreated,
 						lastUpdated		:		s.lastUpdated,
 						isPublic		:		s.isPublic,
