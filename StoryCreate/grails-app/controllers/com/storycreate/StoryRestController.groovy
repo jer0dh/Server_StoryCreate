@@ -49,55 +49,108 @@ class StoryRestController extends RestfulController{
 	def save() {
 		def story = createResource()
 		log.debug(story)
+		
 		story.validate()
 		if(story.hasErrors()){
 			response.status = 422
 			respond story.errors
 			return
 		}
-		def currentUser = springSecurityService.currentUser;
-		if(story.owner != currentUser && !SpringSecurityUtils.ifAllGranted("ROLE_admin")){
-			def error = ["errors" : ["message" :"Story owner must equal to the user logged in"]]
 		
-			response.status = 405 //Method not allowed on resource
-			respond error 
-			return
-		}
-		def storyContent
-		if(story.storyContent != null){
+		//if contains storyContent and not ROLE_admin - error
+		def storyContent = null
+		if(story.storyContent != null && story.storyContent != []){
 			storyContent = story.storyContent
 			story.storyContent = null
+			
+			// not ROLE_admin - error.
+			if (!SpringSecurityUtils.ifAllGranted("ROLE_admin")) {
+				respondError(405, "StoryContent should be added via /api/storyContent")
+				return
+			}
+		}
+		
+		// if story owner not currentUser and currentUser not ROLE_admin - error
+		def currentUser = springSecurityService.currentUser;
+		if(story.owner.id != currentUser.id && !SpringSecurityUtils.ifAllGranted("ROLE_admin")){
+			respondError(405,"Story owner must equal to the user logged in")
+			return
 		}
 
 		if (storyContent != null){
 			println("there is storycontent")
 			// test to make sure user saving is only saving content with user as currentuser
 			// All content must be same owner
-			if (storyContent*.user.id.unique() != [currentUser.id]){
-				def error = ["errors" : ["message" :"Cannot save storyContent as other users"]]
-				response.status = 405 //Method not allowed on resource
-				respond error
-				return
-			}
+//			if (storyContent*.user.id.unique() != [currentUser.id]){
+//				respondError(405,"Cannot save storyContent as other users")
+//				return
+//			}
 			storyContent.each {sc ->
 				story.addToStoryContent(sc)
 			}
 		}
-		story.save()
+		story.save(flush: true)
 		response.status = 200
 		respond story
 	}
 
-	def update() {
-		def story = Story.get(id)
+	def update(StoryCommand updatedStory) {
+//		def updatedStory = createResource()
+		println("${updatedStory}")
+		def story = Story.get(params.id)
 		if (story == null){
-			def error = ["errors" : ["message" :"Story ${id} was not found"]]
-			response.status = 404 //Resource not found
-			respond error
+			respondError(404,"Story ${id} was not found")
+			return
+		}
+		println(updatedStory.dump())
+		println(updatedStory.owner.dump())
+		
+		// if a user comes in with a nonexistent id, Grails creates an unsaved User and makes the id = null
+		if (updatedStory.owner.id == null && updatedStory.owner != null){
+			respondError(400, "Story owner does not exist")  //Bad Request
 			return
 		}
 		
+		if (!SpringSecurityUtils.ifAllGranted('ROLE_admin')){
+			def currentUser = springSecurityService.currentUser;
+			if (updatedStory.owner != null) {
+				if (updatedStory.owner.id != story.owner.id || updatedStory.owner.id != currentUser.id) {
+					respondError(405,"Story owner must equal to the user logged in")
+					return
+				} else {
+					if(story.owner.id != currentUser.id ){
+						respondError(405,"Story owner must equal to the user logged in 2")
+						return
+					}
+				}
+			}
+		}
+		story.properties = updatedStory
+		story.validate()
+		if( story.hasErrors() ) {
+			response.status = 422
+			respond story.errors
+			return
+		}
 		
+		story.save(flush: true)
+		
+		response.status = 200
+		respond story
+	}
+	
+	def respondError(status, message){
+		def error = ["errors" : ["message" : message]]
+		response.status = status //Method not allowed on resource
+		respond error
+		return
 	}
 
+}
+
+class StoryCommand {
+	String title
+	User owner
+	String description
+	Boolean isPublic
 }

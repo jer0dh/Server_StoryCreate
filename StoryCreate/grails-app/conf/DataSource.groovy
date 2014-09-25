@@ -23,7 +23,7 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "update"
+            dbCreate = "create-drop"
             url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
         }
     }

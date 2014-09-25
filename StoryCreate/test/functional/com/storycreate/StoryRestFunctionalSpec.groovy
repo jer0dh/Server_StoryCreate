@@ -11,167 +11,167 @@ class StoryRestFunctionalSpec extends Specification{
 	def adminCreds = ["username":"admin","password":"password"]
 	def userCreds = ["username":"joe","password":"password"]
 	
-//	void "GET as ROLE_admin returns list of Story JSON without storyContent"() {
-//		when: "Obtaining access_token for username: admin from api/login"
-//		def resp = login(adminCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "accessing GET from /api/story with access_token"
-//		resp = rest.get("http://localhost:8080/StoryCreate/api/story"){
-//			header 'Authorization', 'Bearer ' + access_token
-//		}
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "view list of Storys without storyContent"
-//		resp.json[0].title == 'The very First Story'
-//		resp.json[1].title == 'The Storm'
-//		resp.json[0].storyContent == null
-//		resp.json[1].storyContent == null
-//		
-//	}
-//	
-//	void "GET as ROLE_user returns list of Story JSON without storyContent"() {
-//		when: "Obtaining access_token for username: joe from api/login"
-//		def resp = login(userCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "accessing GET from /api/story with access_token"
-//		resp = rest.get("http://localhost:8080/StoryCreate/api/story"){
-//			header 'Authorization', 'Bearer ' + access_token
-//		}
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "view list of Storys without storyContent"
-//		resp.json[0].title == 'The very First Story'
-//		resp.json[1].title == 'The Storm'
-//		resp.json[0].storyContent == null
-//		resp.json[1].storyContent == null
-//		
-//	}
-//	
-//	void "SHOW as ROLE_user returns a Story JSON with storyContent"() {
-//		when: "Obtaining access_token for username: joe from api/login"
-//		def resp = login(userCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "accessing GET from /api/story with access_token"
-//		resp = rest.get("http://localhost:8080/StoryCreate/api/story/1"){
-//			header 'Authorization', 'Bearer ' + access_token
-//		}
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "view list of Storys without storyContent"
-//		resp.json.title == 'The very First Story'
-//		resp.json.storyContent != null
-//		resp.json.storyContent[0].content.contains("Nam eleifend libero quis feugiat") 
-//		
-//	}
-//
-//	void "save() creates a new story as joe by joe"() {
-//		when: "Obtaining access_token for username: joe from api/login"
-//		def resp = login(userCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "Saving new Story as joe"
-//		def joeId = 2
-//		def storyJSON = newStoryJSON(joeId)
-//		println("storyJSON: ${storyJSON}")
-//		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
-//			header 'Authorization', 'Bearer ' + access_token
-//			contentType "application/json"
-//			json {
-//				storyJSON
-//			}
-//		}
-//
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "story created"
-//		resp.json.id != null
-//		resp.json.title == "new Story"
-//		resp.status == 200
-//	}
-//	void "save() creates a new story as admin by joe"() {
-//		when: "Obtaining access_token for username: admin from api/login"
-//		def resp = login(adminCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "Saving new Story by joe"
-//		def joeId = 2
-//		def storyJSON = newStoryJSON(joeId)
-//		println("storyJSON: ${storyJSON}")
-//		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
-//			header 'Authorization', 'Bearer ' + access_token
-//			contentType "application/json"
-//			json {
-//				storyJSON
-//			}
-//		}
-//
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "story created"
-//		resp.json.id != null
-//		resp.json.title == "new Story"
-//		resp.status == 200
-//	}
-//	
-//	void "save() creates a new story as joe by admin"() {
-//		when: "Obtaining access_token for username: joe from api/login"
-//		def resp = login(userCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "Saving new Story by admin"
-//		def adminId = 1
-//		def storyJSON = newStoryJSON(adminId)
-//		println("storyJSON: ${storyJSON}")
-//		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
-//			header 'Authorization', 'Bearer ' + access_token
-//			contentType "application/json"
-//			json {
-//				storyJSON
-//			}
-//		}
-//
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "Errors returned"
-//		resp.json.id == null
-//		resp.json.title == null
-//		resp.status == 405
-//	}
-//	void "save() request contains a new incomplete story"() {
-//		when: "Obtaining access_token for username: admin from api/login"
-//		def resp = login(adminCreds)
-//		def access_token = resp.json.access_token
-//		
-//		and: "Saving new incomplete story by admin"
-//		def adminId = 1
-//		def storyJSON = newIncompleteStoryJSON(adminId)
-//		println("storyJSON: ${storyJSON}")
-//		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
-//			header 'Authorization', 'Bearer ' + access_token
-//			contentType "application/json"
-//			json {
-//				storyJSON
-//			}
-//		}
-//
-//		resp.json instanceof JSONObject
-//		println (resp.json)
-//		
-//		then: "Errors returned"
-//		resp.json.id == null
-//		resp.json.title == null
-//		resp.status == 422
-//	}
-	void "save() new story with storyContent by logged in user"() {
+	void "GET as ROLE_admin returns list of Story JSON without storyContent"() {
+		when: "Obtaining access_token for username: admin from api/login"
+		def resp = login(adminCreds)
+		def access_token = resp.json.access_token
+		
+		and: "accessing GET from /api/story with access_token"
+		resp = rest.get("http://localhost:8080/StoryCreate/api/story"){
+			header 'Authorization', 'Bearer ' + access_token
+		}
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "view list of Storys without storyContent"
+		resp.json[0].title == 'The very First Story'
+		resp.json[1].title == 'The Storm'
+		resp.json[0].storyContent == null
+		resp.json[1].storyContent == null
+		
+	}
+	
+	void "GET as ROLE_user returns list of Story JSON without storyContent"() {
+		when: "Obtaining access_token for username: joe from api/login"
+		def resp = login(userCreds)
+		def access_token = resp.json.access_token
+		
+		and: "accessing GET from /api/story with access_token"
+		resp = rest.get("http://localhost:8080/StoryCreate/api/story"){
+			header 'Authorization', 'Bearer ' + access_token
+		}
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "view list of Storys without storyContent"
+		resp.json[0].title == 'The very First Story'
+		resp.json[1].title == 'The Storm'
+		resp.json[0].storyContent == null
+		resp.json[1].storyContent == null
+		
+	}
+	
+	void "SHOW as ROLE_user returns a Story JSON with storyContent"() {
+		when: "Obtaining access_token for username: joe from api/login"
+		def resp = login(userCreds)
+		def access_token = resp.json.access_token
+		
+		and: "accessing GET from /api/story with access_token"
+		resp = rest.get("http://localhost:8080/StoryCreate/api/story/1"){
+			header 'Authorization', 'Bearer ' + access_token
+		}
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "view list of Storys without storyContent"
+		resp.json.title == 'The very First Story'
+		resp.json.storyContent != null
+		resp.json.storyContent[0].content.contains("Nam eleifend libero quis feugiat") 
+		
+	}
+
+	void "save() creates a new story by joe as joe"() {
+		when: "Obtaining access_token for username: joe from api/login"
+		def resp = login(userCreds)
+		def access_token = resp.json.access_token
+		
+		and: "Saving new Story as joe"
+		def joeId = 2
+		def storyJSON = newStoryJSON(joeId)
+		println("storyJSON: ${storyJSON}")
+		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "story created"
+		resp.status == 200
+		resp.json.id != null
+		resp.json.title == "new Story"
+	}
+	void "save() creates a new story by joe as admin"() {
+		when: "Obtaining access_token for username: admin from api/login"
+		def resp = login(adminCreds)
+		def access_token = resp.json.access_token
+		
+		and: "Saving new Story by joe"
+		def joeId = 2
+		def storyJSON = newStoryJSON(joeId)
+		println("storyJSON: ${storyJSON}")
+		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "story created"
+		resp.json.id != null
+		resp.json.title == "new Story"
+		resp.status == 200
+	}
+	
+	void "save() does NOT create a new story by admin as joe"() {
+		when: "Obtaining access_token for username: joe from api/login"
+		def resp = login(userCreds)
+		def access_token = resp.json.access_token
+		
+		and: "Saving new Story by admin"
+		def adminId = 1
+		def storyJSON = newStoryJSON(adminId)
+		println("storyJSON: ${storyJSON}")
+		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "Errors returned"
+		resp.json.id == null
+		resp.json.title == null
+		resp.status == 405
+	}
+	void "save() request contains a new incomplete story so does NOT create"() {
+		when: "Obtaining access_token for username: admin from api/login"
+		def resp = login(adminCreds)
+		def access_token = resp.json.access_token
+		
+		and: "Saving new incomplete story by admin"
+		def adminId = 1
+		def storyJSON = newIncompleteStoryJSON(adminId)
+		println("storyJSON: ${storyJSON}")
+		resp = rest.post("http://localhost:8080/StoryCreate/api/story"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "Errors returned"
+		resp.json.id == null
+		resp.json.title == null
+		resp.status == 422
+	}
+	void "save() does NOT create new story when request has storyContent when logged in user"() {
 		when: "Obtaining access_token for username: joe from api/login"
 		def resp = login(userCreds)
 		def access_token = resp.json.access_token
@@ -191,14 +191,14 @@ class StoryRestFunctionalSpec extends Specification{
 		resp.json instanceof JSONObject
 		println (resp.json)
 		
-		then: "new story created"
-		resp.json.id != null
-		resp.json.title == "new Story"
-		resp.status == 200
+		then: "new story NOT created"
+		resp.json.id == null
+		resp.json.title == null
+		resp.status == 405
 	}
-	void "save() new story with storyContent with different userId"() {
-		when: "Obtaining access_token for username: joe from api/login"
-		def resp = login(userCreds)
+	void "save() creates new story with storyContent when logged in as admin"() {
+		when: "Obtaining access_token for username: admin from api/login"
+		def resp = login(adminCreds)
 		def access_token = resp.json.access_token
 		
 		and: "Saving new story with storyContent created by joe"
@@ -217,11 +217,115 @@ class StoryRestFunctionalSpec extends Specification{
 		resp.json instanceof JSONObject
 		println (resp.json)
 		
-		then: "Error thrown"
+		then: "new story created"
+		resp.json.id != null
+		resp.json.title != null
+		resp.status == 200
+	}
+	void "update() the title of an existing story as admin"() {
+		when: "Obtaining access_token for username: admin from api/login"
+		def resp = login(adminCreds)
+		def access_token = resp.json.access_token
+		
+		and: "updating existing story with new title"
+		def storyJSON = story1JSON(2)
+		storyJSON.title = "I've changed"
+		println("storyJSON: ${storyJSON}")
+		resp = rest.put("http://localhost:8080/StoryCreate/api/story/1"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "story updated"
+		resp.json.id == 1
+		resp.json.title == "I've changed"
+		resp.status == 200
+	}
+	void "update() the title of an existing story as admin where request has invalid user ID in story owner."() {
+		when: "Obtaining access_token for username: admin from api/login"
+		def resp = login(adminCreds)
+		def access_token = resp.json.access_token
+		
+		and: "updating existing story with new title and an invalid user id in requesting JSON"
+		def storyJSON = story1JSON(44)
+		storyJSON.title = "I've changed"
+		println("storyJSON: ${storyJSON}")
+		resp = rest.put("http://localhost:8080/StoryCreate/api/story/1"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "Error is received"
+		resp.json.id == null
+		resp.json.title == null
+		resp.status == 400
+		resp.json.errors.message[0] == "Story owner does not exist"
+	}
+	
+	void "update() the title of an existing story by joe as joe"() {
+		when: "Obtaining access_token for username: joe from api/login"
+		def resp = login(userCreds)
+		def access_token = resp.json.access_token
+		
+		and: "updating existing story with new title"
+		def storyJSON = story2JSON(2)
+		storyJSON.title = "I've changed"
+		println("storyJSON: ${storyJSON}")
+		resp = rest.put("http://localhost:8080/StoryCreate/api/story/2"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "story updated"
+		resp.json.id == 2
+		resp.json.title == "I've changed"
+		resp.status == 200
+	}
+	void "update() the title of an existing story by admin as joe"() {
+		when: "Obtaining access_token for username: joe from api/login"
+		def resp = login(userCreds)
+		def access_token = resp.json.access_token
+		
+		and: "updating existing story with new title"
+		def storyJSON = story1JSON(1)
+		storyJSON.title = "I've changed"
+		println("storyJSON: ${storyJSON}")
+		resp = rest.put("http://localhost:8080/StoryCreate/api/story/1"){
+			header 'Authorization', 'Bearer ' + access_token
+			contentType "application/json"
+			json {
+				storyJSON
+			}
+		}
+
+		resp.json instanceof JSONObject
+		println (resp.json)
+		
+		then: "Errors "
 		resp.json.id == null
 		resp.json.title == null
 		resp.status == 405
+		resp.json.errors.message[0] == "Story owner must equal to the user logged in"
 	}
+	
 	
 	def newStoryWithStoryContent(userId, userId2){
 		def story = newStoryJSON(userId)
@@ -251,6 +355,23 @@ class StoryRestFunctionalSpec extends Specification{
 					owner			:		[id 	:		userId],
 					isPublic		:		true
 			
+			]
+	}
+	
+	def story1JSON(userId) {
+		return [
+				title				:		"The very First Story",
+				isPublic			:		true,
+				owner				:		[id: userId],
+				description			:		"The first is usually the best"
+			]
+	}
+	def story2JSON(userId) {
+		return [
+				title				:		"The Storm",
+				isPublic			:		true,
+				owner				:		[id: userId],
+				description			:		"It all started on dark and stormy night"
 			]
 	}
 	def login(creds) {
