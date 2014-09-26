@@ -6,6 +6,8 @@ import grails.transaction.Transactional
 import static org.springframework.http.HttpStatus.*
 import grails.plugin.springsecurity.SpringSecurityUtils
 
+// TODO : create service for database transactions, simplify controller
+
 class StoryRestController extends RestfulController{
 
 	static responseFormats = ['json']
@@ -25,7 +27,7 @@ class StoryRestController extends RestfulController{
 	def show() {
 		def story = Story.get(params.id)
 		if (story == null){
-			respond status = 404  // Not Found
+			respondError(404,"Story not found")
 			return
 		}
 		if( SpringSecurityUtils.ifAllGranted("ROLE_admin")){
@@ -93,7 +95,7 @@ class StoryRestController extends RestfulController{
 		response.status = 200
 		respond story
 	}
-
+@Transactional
 	def update(StoryCommand updatedStory) {
 //		def updatedStory = createResource()
 		println("${updatedStory}")
@@ -138,14 +140,45 @@ class StoryRestController extends RestfulController{
 		response.status = 200
 		respond story
 	}
-	
+	@Transactional
+	def delete() {
+		def story = Story.get(params.id)
+		if (story == null){
+			def message = "Story " + params.id+ " was not found."
+			respondError(404,message)
+			return
+		}
+		def title = story.title
+		def storyId = story.id
+		
+		// if not admin user, then make sure owner of story is same as logged in user
+		if (!SpringSecurityUtils.ifAllGranted('ROLE_admin')){
+			def currentUser = springSecurityService.currentUser;
+			if(story.owner.id != currentUser.id ){
+				respondError(405,"Story owner must equal to the user logged in when deleting story")
+				return
+			}
+		}
+		
+		story.delete(flush: true)
+		def message = "Story deleted. id: " + storyId + ", Title: " + title
+		respondSuccess(200, message)
+		
+	}
 	def respondError(status, message){
-		def error = ["errors" : ["message" : message]]
-		response.status = status //Method not allowed on resource
+		def error = ["errors" : [["message" : message]]]
+		log.debug (message)
+		response.status = status
 		respond error
 		return
 	}
-
+	def respondSuccess(status, message){
+		def success = ["success" : [["message" : message]]]
+		log.debug (message)
+		response.status = status 
+		respond success
+		return
+	}
 }
 
 class StoryCommand {
