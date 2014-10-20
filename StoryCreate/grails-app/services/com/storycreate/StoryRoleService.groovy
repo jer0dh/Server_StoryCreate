@@ -46,5 +46,27 @@ class StoryRoleService {
 		}
 	}
 	
+	public isStoryRole(User u, Story s, int role) {
+		if(u == null || s == null) {return false}
+		switch (role){
+			case StoryRole.EDITOR:
+				def count = Editor.where {
+					user.id == u.id &&
+					story.id == s.id
+				}.list()
+				return (count.size() > 0)
+				break;
+			case StoryRole.VEIWER:
+				def count = Viewer.where {
+					user.id == u.id &&
+					story.id == s.id
+				}.list()
+				return (count.size() > 0)
+				break;
+			
+		}
+		
+	}
+	
 	
 }

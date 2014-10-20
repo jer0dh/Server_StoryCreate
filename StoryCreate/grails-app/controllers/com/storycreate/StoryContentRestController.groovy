@@ -38,8 +38,6 @@ class StoryContentRestController extends RestfulController{
 //		}
 //	}
 	
-	def s
-	
 	def respondError(status, message){
 		def error = ["errors" : [["message" : message]]]
 		log.debug (message)

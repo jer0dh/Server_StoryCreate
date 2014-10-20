@@ -1,7 +1,7 @@
 package com.storycreate
 
 class StoryContent {
-	User user
+	User author
 	String content
 	Date dateCreated
 	Date lastUpdated
@@ -10,7 +10,7 @@ class StoryContent {
 	
     static constraints = {
 		content nullable: false
-		user nullable: false
+		author nullable: false
     }
 	
 	static mapping = {

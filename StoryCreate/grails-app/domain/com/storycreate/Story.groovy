@@ -11,9 +11,6 @@ class Story {
 	Boolean isPublic
 	List storyContent = []
 	User owner
-//	List editors = []
-//	List contributors = []
-//	SortedSet<User> viewers
 	
 	static belongsTo = [owner: User]
 	static hasMany = [storyContent : StoryContent] //,  viewers : User] //, editors : User, contributors : User]
@@ -24,15 +21,17 @@ class Story {
 		description nullable: true, size: 1..1024
 		isPublic defaultValue: true
 		owner nullable: false
-//		editors nullable: true
-//		contributors nullable: true
-//		viewers nullable: true
+
     }
 	
 	static mapping = {
 		autoTimestamp true
-//		viewers joinTable: [name: "viewers"]
+		storyContent cascade: "all-delete-orphan"
 
+	}
+	
+	def isOwner(User u){
+		return (this.owner.id == u.id)	
 	}
 	
 	// Start of methods for Roles
@@ -43,7 +42,6 @@ class Story {
 			println("beforeDelete: " + story.dump())
 			Editor.removeAll(story, true)
 			Viewer.removeAll(story, true)
-			Author.removeAll(story, true)
 		}
 	}
 	
@@ -61,6 +59,13 @@ class Story {
 		storyRoleService.removeStoryRole(u, this, StoryRole.EDITOR)
 	}
 	
+	def removeEditors() {
+		Editor.removeAll(this,true)
+	}
+	
+	def isEditor(User u){
+		return storyRoleService.isStoryRole(u, this, StoryRole.EDITOR)
+	}
 	// Viewers
 	
 	def getViewers() {
@@ -73,6 +78,14 @@ class Story {
 	
 	def removeViewer(User u){
 		storyRoleService.removeStoryRole(u, this, StoryRole.VIEWER)
+	}
+	
+	def removeViewers() {
+		Viewer.removeAll(this, true)
+	}
+	
+	def isViewer(User u){
+		return storyRoleService.isStoryRole(u, this, StoryRole.VIEWER)
 	}
 //	// Authors
 //	

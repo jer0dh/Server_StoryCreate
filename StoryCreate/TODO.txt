@@ -1,0 +1,10 @@
+//TODO  Determine new JSON of Story with Editors, Viewers, Authors?
+
+//TODO Determine what Owners, Editors, Viewers, isPublic can do.  Determine all scenarios
+
+//TODO Determine where permissions will be checked based on all scenarios: story class, story service class, or storyroleservice
+
+//TODO Create StoryService and unit/integration tests (go through all scenarios)
+
+//TODO Create StoryContentService (go through all scenarios)
+

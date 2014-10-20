@@ -26,9 +26,8 @@ class StoryRole {
 
 		if (flush) { StoryRole.withSession { it.flush() } }
 }
-	
+
 	
 	static final int EDITOR = 1
 	static final int VIEWER = 2
-	static final int AUTHOR = 3
 }
