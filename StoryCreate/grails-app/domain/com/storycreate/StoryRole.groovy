@@ -1,5 +1,5 @@
 package com.storycreate
-
+// test
 class StoryRole {
 	User user
 	Story story
