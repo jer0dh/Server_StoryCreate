@@ -1,6 +1,8 @@
 package com.storycreate
 // test
 class StoryRole {
+	
+	// new
 	User user
 	Story story
     static constraints = {
