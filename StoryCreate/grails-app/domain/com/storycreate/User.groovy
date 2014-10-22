@@ -43,4 +43,15 @@ class User {
 	protected void encodePassword() {
 		password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
 	}
+	
+	// Added by jer0dh
+	def beforeDelete() {
+		def user = this
+		User.withNewSession {
+			println("beforeDelete: " + user.dump())
+			Editor.removeAll(user)
+			Viewer.removeAll(user)
+			UserRole.removeAll(user)
+		}
+	}
 }
