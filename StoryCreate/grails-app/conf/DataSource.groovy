@@ -1,8 +1,8 @@
 dataSource {
     pooled = true
     jmxExport = true
-	driverClassName = "com.mysql.jdbc.Driver"
-    username = "root"
+    driverClassName = "org.h2.Driver"
+    username = "sa"
     password = ""
 }
 hibernate {
@@ -18,15 +18,43 @@ environments {
     development {
         dataSource {
             dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
+            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
         }
     }
     test {
         dataSource {
             dbCreate = "create-drop"
-            url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
+            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
         }
-    }
+    }//dataSource {
+//    pooled = true
+//    jmxExport = true
+//	driverClassName = "com.mysql.jdbc.Driver"
+//    username = "root"
+//    password = ""
+//}
+//hibernate {
+//    cache.use_second_level_cache = true
+//    cache.use_query_cache = false
+////    cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory' // Hibernate 3
+//    cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4
+//    singleSession = true // configure OSIV singleSession mode
+//}
+//
+//// environment specific settings
+//environments {
+//    development {
+//        dataSource {
+//            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+//            url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
+//        }
+//    }
+//    test {
+//        dataSource {
+//            dbCreate = "create-drop"
+//            url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
+//        }
+//    }
     production {
         dataSource {
             dbCreate = "update"
