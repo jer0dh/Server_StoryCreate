@@ -16,7 +16,7 @@ class StoryIntegrationSpec extends Specification {
     }
 
     void "Testing removal of a user and editors"() {
-    given: " Users from bootstrat and new Story"
+    given: " Users from bootstrap and new Story"
 	def joe = User.findByUsername('joe')
 	def jane = User.findByUsername('jane')
 	def bill = User.findByUsername('bill')
@@ -36,7 +36,7 @@ class StoryIntegrationSpec extends Specification {
     bill.delete(flush: true)  
 	
     then: "Should only be one editor now"
-	story1.editors.clear()
+	story1.editors.clear()   //removes the proxies to Editor table since one proxy points to nonexistent bill and would produce a "UnresolvableObjectException" with hibernate
 	story1.refresh()
     println("after bill deleted:" + story1.dump())
 	def story2 = Story.where { id == story1Id }.get()
@@ -68,11 +68,20 @@ class StoryIntegrationSpec extends Specification {
 		when: "We delete story3"
 		story3.delete(flush: true)
 		story3.editors.clear()
-
+		// a story3.refresh() causes error since story3 cannot be reloaded from database
 		
 		then: "we hold these to be true"
 		Editor.count() == editorCount - 1
 		println(story3.dump())
+	}
+	
+	void "Testing adding and deleting Editors and Viewers from Story"() {
+		given: " Users from bootstrap and new Story"
+		def joe = User.findByUsername('joe')
+		def jane = User.findByUsername('jane')
+		def bill = User.findByUsername('bill')
+		def story1 = new Story(owner: joe, title:"Story1 Title", isPublic: true).save(failOnError: true)
+		def story1Id = story1.id
 		
 	}
 }

@@ -10,7 +10,7 @@ class Editor  { // extends StoryRole{
 	
 		static void removeAll(User u, boolean flush = false) {
 			println("editors: ${Editor.count()}")
-			println("In Editors.remoffveAll(user)")
+			println("In Editors.removeAll(user)")
 			if (u == null) return
 	
 //			Editor.executeUpdate("delete Editor e where e.user = :userid", [userid : User.load(u.id)])
@@ -18,7 +18,7 @@ class Editor  { // extends StoryRole{
 				user == User.load(u.id)
 			}.deleteAll()
 	
-			if (flush) { StoryRole.withSession { it.flush() } }
+			if (flush) { Editor.withSession { it.flush() } }
 			println("editors: ${Editor.count()}")
 			println('finished Editor.removeAll(user)')
 	}
