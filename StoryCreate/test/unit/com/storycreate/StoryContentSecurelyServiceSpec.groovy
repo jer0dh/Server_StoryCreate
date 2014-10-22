@@ -9,9 +9,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-@TestFor(StoryContentSecurilyService)
+@TestFor(StoryContentSecurelyService)
 @Mock([StoryContent,Story, User, UserRole, Role, StoryRole, Editor, Viewer])
-class StoryContentSecurilyServiceSpec extends Specification {
+class StoryContentSecurelyServiceSpec extends Specification {
 
 	
     def setup() {
@@ -84,14 +84,13 @@ class StoryContentSecurilyServiceSpec extends Specification {
 		given: "Mocked security functions, setting logged in user: #luW and story with owner: #ownW"
 		def lu = User.findByUsername(luW)
 		def owner = User.findByUsername(ownW)
-		def story = Story.findByOwner(ownW)
 		def sc = StoryContent.findByContent(scW)
 		
 		Story.metaClass.static.isEditor = {User u -> return isEditorW}
 		Story.metaClass.static.isViewer = {User u -> return isViewerW}
 		
 		def springSecurityService = Mock(SpringSecurityService)
-		1 * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
+		invW * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
 		service.springSecurityService = springSecurityService
 		
 		SpringSecurityUtils.metaClass.'static'.ifAllGranted = { String role ->
@@ -104,20 +103,51 @@ class StoryContentSecurilyServiceSpec extends Specification {
 		result == theResultW
 		
 		where:
-		luW		|	ownW		|	isEditorW	|	isAdminW	|	isViewerW	|	scW			|	theResultW
-		"joe"	|	"joe"		|	false		|	false		|	false		|	"asparagus"	|		true			//isPublic is true
-		"joe"	|	"admin"		|	true		|	false		|	false		|	"cranberry"	|		true			//isPublic is true
-		"admin"	|	"joe"		|	false		|	true		|	false		|	"cranberry"	|		true			//isPublic is true
+		luW		|	ownW	|	invW |	isEditorW	|	isAdminW	|	isViewerW	|	scW			|	theResultW
+		"joe"	|	"joe"	|	0	|	false		|	false		|	false		|	"asparagus"	|		true			//isPublic is true
+		"joe"	|	"admin"	|	0	|	true		|	false		|	false		|	"cranberry"	|		true			//isPublic is true
+		"admin"	|	"joe"	|	0	|	false		|	true		|	false		|	"cranberry"	|		true			//isPublic is true
 	
-		"jane"	|	"jane"		|	false		|	false		|	false		|	"beach"		|		true			//isPublic is false but owner of story
-		"admin"	|	"jane"		|	false		|	true		|	false		|	"beach"		|		true			//isPublic is false but admin
-		"joe"	|	"jane"		|	true		|	false		|	false		|	"beach"		|		true			//isPublic is false but is Editor
-		"joe"	|	"jane"		|	false		|	false		|	true		|	"beach"		|		true			//isPublic is false but is Editor
-		"bill"	|	"jane"		|	false		|	false		|	false		|	"beach"		|		false			//isPublic is false but is Editor
+		"jane"	|	"jane"	|	1	|	false		|	false		|	false		|	"beach"		|		true			//isPublic is false but owner of story
+		"admin"	|	"jane"	|	1	|	false		|	true		|	false		|	"beach"		|		true			//isPublic is false but admin
+		"joe"	|	"jane"	|	1	|	true		|	false		|	false		|	"beach"		|		true			//isPublic is false but is Editor
+		"joe"	|	"jane"	|	1	|	false		|	false		|	true		|	"beach"		|		true			//isPublic is false but is Editor
+		"bill"	|	"jane"	|	1	|	false		|	false		|	false		|	"beach"		|		false			//isPublic is false but is Editor
 		}
 	
 	
+	@Unroll
+	void "Testing Delete Permission rules"() {
+		
+		given: "Mocked security functions, setting logged in user: #luW and story with owner: #ownW"
+		def lu = User.findByUsername(luW)
+		def owner = User.findByUsername(ownW)
+		def story = Story.findByOwner(ownW)
+		def sc = StoryContent.findByContent(scW)
+			
+		def springSecurityService = Mock(SpringSecurityService)
+		invW * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
+		service.springSecurityService = springSecurityService
+		
+		SpringSecurityUtils.metaClass.'static'.ifAllGranted = { String role ->
+			return isAdminW }
+		
+		when: "function retrieve() is called with sc"
+		def result = service.delete(sc)
+		
+		then: "proper boolean value returned"
+		result == theResultW
+		
+		where:
+		luW		|	ownW	|	invW |	isAdminW	|	scW			|	theResultW
+		"joe"	|	"joe"	|	1	|	false		|	"asparagus"	|		true			//Joe is owner of story
+		"joe"	|	"admin"	|	1	|	false		|	"cranberry"	|		false			//Joe is not owner yet author
+		"admin"	|	"joe"	|	1	|	true		|	"cranberry"	|		true			//admin can delite
 	
+		"jane"	|	"jane"	|	1	|	false		|	"beach"		|		true			//isPublic is false but owner of story
+		"admin"	|	"jane"	|	1	|	true		|	"beach"		|		true			//isPublic is false but admin
+		"joe"	|	"jane"	|	1	|	false		|	"beach"		|		false			//isPublic is false. Is Editor but not owner
+		}
 //things we tried to prevent NPE when calling mocked Story class method isEditor
 // which calls an injected service 
 		

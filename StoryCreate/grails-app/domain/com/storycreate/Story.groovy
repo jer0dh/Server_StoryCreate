@@ -13,7 +13,7 @@ class Story {
 	User owner
 	
 	static belongsTo = [owner: User]
-	static hasMany = [storyContent : StoryContent] //,  viewers : User] //, editors : User, contributors : User]
+	static hasMany = [storyContent : StoryContent, viewers : Viewer, editors : Editor] //, contributors : User]
 
 
     static constraints = {
@@ -27,6 +27,8 @@ class Story {
 	static mapping = {
 		autoTimestamp true
 		storyContent cascade: "all-delete-orphan"
+		editors cascade: "all-delete-orphan"
+		viewers cascade: "all-delete-orphan"
 
 	}
 	
@@ -36,57 +38,59 @@ class Story {
 	
 	// Start of methods for Roles
 	
-	def beforeDelete() {
-		def story = this
-		Story.withNewSession {
-			println("beforeDelete: " + story.dump())
-			Editor.removeAll(story, true)
-			Viewer.removeAll(story, true)
-		}
-	}
+//	def beforeDelete() {
+//		def story = this
+//		Story.withNewSession {
+//			println("beforeDelete: " + story.dump())
+//	//		Editor.removeAll(story, true)
+//			println("Returned from Editor.removeAll in Story.beforeDelete()")
+//			Viewer.removeAll(story, true)
+//			println("Returned from Viewer.removeAll in Story.beforeDelete()")
+//		}
+//	}
 	
-	// Editors
-	
-	def getEditors() {
-		storyRoleService.findAllByStory(this, StoryRole.EDITOR)
-	}
-	
-	def addToEditors(User u) {
-		storyRoleService.addToStoryRole(u, this, StoryRole.EDITOR)
-	}
-	
-	def removeEditor(User u){
-		storyRoleService.removeStoryRole(u, this, StoryRole.EDITOR)
-	}
-	
-	def removeEditors() {
-		Editor.removeAll(this,true)
-	}
-	
-	def isEditor(User u){
-		return storyRoleService.isStoryRole(u, this, StoryRole.EDITOR)
-	}
-	// Viewers
-	
-	def getViewers() {
-		storyRoleService.findAllByStory(this, StoryRole.VIEWER)
-	}
-	
-	def addToViewers(User u) {
-		storyRoleService.addToStoryRole(u, this, StoryRole.VIEWER)
-	}
-	
-	def removeViewer(User u){
-		storyRoleService.removeStoryRole(u, this, StoryRole.VIEWER)
-	}
-	
-	def removeViewers() {
-		Viewer.removeAll(this, true)
-	}
-	
-	def isViewer(User u){
-		return storyRoleService.isStoryRole(u, this, StoryRole.VIEWER)
-	}
+//	// Editors
+//	
+//	def getEditors() {
+//		storyRoleService.findAllByStory(this, StoryRole.EDITOR)
+//	}
+//	
+//	def addToEditors(User u) {
+//		storyRoleService.addToStoryRole(u, this, StoryRole.EDITOR)
+//	}
+//	
+//	def removeEditor(User u){
+//		storyRoleService.removeStoryRole(u, this, StoryRole.EDITOR)
+//	}
+//	
+//	def removeEditors() {
+//		Editor.removeAll(this,true)
+//	}
+//	
+//	def isEditor(User u){
+//		return storyRoleService.isStoryRole(u, this, StoryRole.EDITOR)
+//	}
+//	// Viewers
+//	
+//	def getViewers() {
+//		storyRoleService.findAllByStory(this, StoryRole.VIEWER)
+//	}
+//	
+//	def addToViewers(User u) {
+//		storyRoleService.addToStoryRole(u, this, StoryRole.VIEWER)
+//	}
+//	
+//	def removeViewer(User u){
+//		storyRoleService.removeStoryRole(u, this, StoryRole.VIEWER)
+//	}
+//	
+//	def removeViewers() {
+//		Viewer.removeAll(this, true)
+//	}
+//	
+//	def isViewer(User u){
+//		return storyRoleService.isStoryRole(u, this, StoryRole.VIEWER)
+//	}
 //	// Authors
 //	
 //	def getAuthors() {

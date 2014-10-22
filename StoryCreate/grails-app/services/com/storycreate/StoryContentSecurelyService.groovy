@@ -9,7 +9,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 
 
 @Transactional
-class StoryContentSecurilyService {
+class StoryContentSecurelyService {
 	def springSecurityService
 	
     def update(sc) {

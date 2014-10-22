@@ -49,9 +49,9 @@ class User {
 		def user = this
 		User.withNewSession {
 			println("beforeDelete: " + user.dump())
-			Editor.removeAll(user, true)
-			Viewer.removeAll(user, true)
-			Author.removeAll(user, true)
+			Editor.removeAll(user)
+			Viewer.removeAll(user)
+			UserRole.removeAll(user)
 		}
 	}
 }
