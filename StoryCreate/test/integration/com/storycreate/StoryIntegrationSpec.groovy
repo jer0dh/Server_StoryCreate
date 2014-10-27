@@ -76,12 +76,32 @@ class StoryIntegrationSpec extends Specification {
 	}
 	
 	void "Testing adding and deleting Editors and Viewers from Story"() {
-		given: " Users from bootstrap and new Story"
+		given: " Users from bootstrap, new Story, current Editor and viewer counts"
 		def joe = User.findByUsername('joe')
 		def jane = User.findByUsername('jane')
 		def bill = User.findByUsername('bill')
 		def story1 = new Story(owner: joe, title:"Story1 Title", isPublic: true).save(failOnError: true)
+		def story2 = new Story(owner: jane, title:"Story2 Title", isPublic: true).save(failOnError: true, flush:true)
 		def story1Id = story1.id
+		def originalEditorCount = Editor.count()
+		def originalViewerCount = Viewer.count()
+		
+		when: "we add and delete editors and viewers"
+		story1.addToEditors(new Editor(user: joe))
+		story1.addToEditors(new Editor(user: jane))
+		story1.addToEditors(new Editor(user: bill))
+		story1.addToViewers(new Viewer(user: bill))
+		story2.addToViewers(new Viewer(user: joe))
+		story2.addToEditors(new Editor(user: bill))
+		
+		def joeEd = story1.editors.find { it.user.id == joe.id }
+		story1.removeFromEditors(joeEd)
+		
+		then: "we hold these to be true"
+		Editor.count() == originalEditorCount + 4 - 1
+		Viewer.count() ==  originalViewerCount + 2
+		story1.editors.size() == 2
+		story1.editors.collect() {e-> e.user.username}.sort() == ['bill','jane']
 		
 	}
 }
