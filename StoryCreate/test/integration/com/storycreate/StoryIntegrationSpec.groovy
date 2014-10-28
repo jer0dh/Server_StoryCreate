@@ -104,4 +104,24 @@ class StoryIntegrationSpec extends Specification {
 		story1.editors.collect() {e-> e.user.username}.sort() == ['bill','jane']
 		
 	}
+	
+	void "When deleting a story, the story content should also be deleted"() {
+		given: "A story with story content"
+		def story = Story.findByTitle("The very very First Story")
+		assert story.title ==  "The very very First Story"
+		def numOfEditors = story.editors.size()
+		def totalNumOfEditors = Editor.count()
+		def numOfSC = story.storyContent.size()
+		def totalNumOfSC = StoryContent.count()
+		
+		when: "We delete the story"
+		story.delete(flush: true)
+//		story.editors.clear()
+//		story.storyContent.clear()
+		
+		then: "We hold these to be true"
+		StoryContent.count() == totalNumOfSC - numOfSC
+		Editor.count() == totalNumOfEditors - numOfEditors
+		
+	}
 }
