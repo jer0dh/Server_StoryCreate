@@ -124,4 +124,25 @@ class StoryIntegrationSpec extends Specification {
 		Editor.count() == totalNumOfEditors - numOfEditors
 		
 	}
+	
+	void "Testing isEditor function"() {
+		given: "Users and stories from bootstrap"
+
+		
+		when: "A story is retrieved from database"
+		def story = Story.findByTitle(titleW)
+		assert story.title == titleW
+		def user = User.findByUsername(userW)
+		assert user.username == userW
+		
+		then: "isEditor returns the correct value"
+		story.isEditor(user) == resultW
+		
+		where:
+		userW	|	titleW								|	resultW
+		"joe"	|	"The very very First Story"			|	false
+		"jane"	|	"The very very First Story"			|	true
+		"bill"	|	"The very very First Story"			|	false
+
+	}
 }

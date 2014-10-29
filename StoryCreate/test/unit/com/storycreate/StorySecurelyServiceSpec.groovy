@@ -18,6 +18,8 @@ class StorySecurelyServiceSpec extends Specification {
 		def userUser = new User(username:"joe", password: "password").save(failOnError:true)
 		def user2User = new User(username:"jane", password: "password").save(failOnError:true)
 		def user3User = new User(username:"bill", password: "password").save(failOnError:true, flush: true)
+		def user4User = new User(username:"panda",password:"password").save(failOnError:true, flush:true)
+		def user5User = new User(username:"ann",password:"password").save(failOnError:true, flush:true)
 		def adminRole = new Role(authority: "ROLE_admin").save(failOnError: true)
 		def userRole = new Role(authority: "ROLE_user").save(failOnError: true)
 		new UserRole(user: adminUser, role: adminRole).save(failOnError:true)
@@ -28,13 +30,16 @@ class StorySecurelyServiceSpec extends Specification {
 		def story2 = new Story(title: "The Storm", isPublic : true, owner: userUser, description:"It all started on dark and stormy night").save(failOnError: true)
 		def story3 = new Story(title: "Jamaica at Night", isPublic : true, owner: userUser, description:"The drums were loud....very loud").save(failOnError: true)
 		def story4 = new Story(title: "My Secret", isPublic: false, owner: user2User, description:"Hidden from public eyes").save(failOnError: true, flush :true)
+		def story5 = new Story(title: "My Secret2", isPublic: false, owner: user2User, description:"Hidden from public eyes").save(failOnError: true, flush :true)
+		def story6 = new Story(title: "My Secret3", isPublic: false, owner: user2User, description:"Hidden from public eyes").save(failOnError: true, flush :true)
 		new StoryContent(story: story1, author:adminUser, content:"apple").save(failOnError: true)
 		new StoryContent(story: story1, author:adminUser, content:"banana").save(failOnError: true)
 		new StoryContent(story: story1, author:userUser, content:"cranberry").save(failOnError: true)
 		new StoryContent(story: story2, author:userUser, content:"asparagus").save(failOnError: true)
 		new StoryContent(story: story2, author:adminUser, content:"carrot").save(failOnError: true)
 		new StoryContent(story: story4, author:user2User, content:"beach").save(failOnError: true, flush: true)
-
+		story5.addToEditors(new Editor(user: user4User)).save(failOnError:true)
+		story6.addToViewers(new Viewer(user: user5User)).save(failOnError:true, flush:true)
     }
 
     def cleanup() {
@@ -170,9 +175,6 @@ class StorySecurelyServiceSpec extends Specification {
 		given: "Mocked security functions, setting logged in user"
 		def lu = User.findByUsername(luW)
 		
-		Story.metaClass.static.isEditor = {User u -> return isEditorW}
-		Story.metaClass.static.isViewer = {User u -> return isViewerW}
-		
 		def springSecurityService = Mock(SpringSecurityService)
 		invW * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
 		service.springSecurityService = springSecurityService
@@ -183,17 +185,18 @@ class StorySecurelyServiceSpec extends Specification {
 		when: "function list() is called"
 		def result = service.list()
 		
-		then: "proper boolean value returned"
+		then: "proper number of stories are returned"
 		result.size == theResultW
 		
 		where:
-		luW		|	invW |	isEditorW	|	isAdminW	|	isViewerW	|	theResultW
-		"joe"	|	1	|	false		|	false		|	false		|	3			
-		"joe"	|	1	|	true		|	false		|	false		|	4			
-		"admin"	|	1	|	false		|	true		|	false		|	4			
+		luW		|	invW 	|	isAdminW	|	theResultW			
+		"joe"	|	1		|	false		|	3			
+		"admin"	|	1		|	true		|	6			
 	
-		"jane"	|	1	|	false		|	false		|	false		|	4			//Jane is owner of private story		
-		"bill"	|	1	|	false		|	false		|	false		|	3			
+		"jane"	|	1		|	false		|	6			//Jane is owner of private story		
+		"bill"	|	1		|	false		|	3
+		"panda" |	1		|	false		|	4     		//panda is editor of a private story
+		"ann"	|	1		|	false		| 	4			//ann is a viewer of a private story			
 
 	}
 	

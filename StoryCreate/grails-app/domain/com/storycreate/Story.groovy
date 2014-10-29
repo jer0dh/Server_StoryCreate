@@ -35,6 +35,25 @@ class Story {
 	def isOwner(User u){
 		return (this.owner.id == u.id)	
 	}
+	def isEditor(User u){
+		def thisStory = this
+		def query = Editor.where {
+			(story.id == thisStory.id) && (user.id == u.id )
+		}
+		return query.count() > 0
+		
+		//this did not work
+		//		def ed = this.editors?.findByUser(u)
+		//		return this.editors?.findByUser(u) !=  null
+			
+	}
+	def isViewer(User u){
+		def thisStory = this
+		def query = Viewer.where {
+			(story.id == thisStory.id) && (user.id == u.id )
+		}
+		return query.count() > 0
+	}
 	
 	// Start of methods for Roles
 	

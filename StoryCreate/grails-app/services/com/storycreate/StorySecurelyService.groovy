@@ -12,7 +12,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 @Transactional
 class StorySecurelyService {
 	def springSecurityService
-		
+
+	// list returns a list of stories the currently logged in user can see		
 	def list(params) {
 		def currentUser = springSecurityService.currentUser
 		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
@@ -22,9 +23,8 @@ class StorySecurelyService {
 		} else {
 			def query = Story.where {
 				(isPublic == true) || (owner.id == currentUser.id ) ||
-				editors { id == currentUser.id} 
-//				||
-//				isViewer(currentUser)
+				editors { id == currentUser.id} ||
+				viewers { id == currentUser.id}
 			}
 			return query.list(params)
 			
