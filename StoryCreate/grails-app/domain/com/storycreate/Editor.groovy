@@ -1,6 +1,6 @@
 package com.storycreate
 
-class Editor  { // extends StoryRole{
+class Editor  { 
 	User user
 	
 	static belongsTo = [story: Story]

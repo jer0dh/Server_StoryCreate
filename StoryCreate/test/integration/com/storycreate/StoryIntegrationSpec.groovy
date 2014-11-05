@@ -3,7 +3,7 @@ package com.storycreate
 
 
 import spock.lang.*
-
+import org.hibernate.Criteria
 /**
  *
  */
@@ -145,4 +145,123 @@ class StoryIntegrationSpec extends Specification {
 		"bill"	|	"The very very First Story"			|	false
 
 	}
+	
+	void "Testing where"() {
+		
+		when:
+		def query = Story.where {
+			(isPublic == true) 
+		}
+		
+		then:
+		query.list().size() == 3
+		
+	}
+	void "Testing where user"() {
+		
+		when:
+		def query = Story.where {
+			(owner.username == 'joe')
+		}
+		
+		then:
+		query.list().size() == 2
+		
+	}
+	void "Testing where editor"() {
+		
+		when:
+		def query = Story.where {
+			editors {user.username == "jane"}
+		}
+		
+		then:
+		query.list().size() == 1
+		
+	}
+	
+/*	This produces org.hibernate.QueryException: duplicate alias: editors_alias1 
+ *  with or without the extra parens
+ */
+//	void "Testing where user or editor"() {
+//		
+//		when:
+//		def query = Story.where {
+//			(owner.username == 'joe') ||
+//			(editors {user.username == "jane"})
+//		}
+//		
+//		then:
+//		query.list().size() == 3
+//		
+//	}
+	void "Testing createCriteria editor"() {
+		
+		when:
+		def c = Story.createCriteria()
+		def results = c.list {
+			editors {
+				user { eq('username', "jane") }
+			}
+		}
+		
+		then:
+		results.size() == 1
+		
+	}
+	void "Testing createCriteria owner"() {
+		
+		when:
+		def c = Story.createCriteria()
+		def results = c.list {
+			owner {
+				eq('username','joe')
+			}
+		}
+		
+		then:
+		results.size() == 2
+		
+	}
+	
+	void "Testing createCriteria owner or editor"() {
+		
+		when:
+		def c = Story.createCriteria()
+		def results = c.list {
+
+			or{
+				owner {
+					eq('username','joe')
+				}
+				editors {
+					user { eq('username', "jane") }
+				}
+			}
+		}
+		
+		then:
+		results.size() == 3
+		
+	}
+	void "Testing createCriteria owner or editor with join"() {
+		
+		when:
+		def c = Story.createCriteria()
+		def results = c.list {
+			createAlias('editors','editors',Criteria.LEFT_JOIN)
+			or{
+				owner {
+					eq('username','joe')
+				}
+				 editors { eq('user.username', "jane")}
+				
+			}
+		}
+		
+		then:
+		results.size() == 3
+		
+	}
+
 }

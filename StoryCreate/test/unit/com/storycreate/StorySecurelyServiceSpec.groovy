@@ -44,7 +44,37 @@ class StorySecurelyServiceSpec extends Specification {
 
     def cleanup() {
     }
+	@Unroll
+	void "Testing List function"() {
+		given: "Mocked security functions, setting logged in user"
+		def lu = User.findByUsername(luW)
+		assert lu.username == luW
+		
+		def springSecurityService = Mock(SpringSecurityService)
+		invW * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
+		service.springSecurityService = springSecurityService
+		
+		SpringSecurityUtils.metaClass.'static'.ifAllGranted = { String role ->
+			return isAdminW }
+		
+		when: "function list() is called"
+		def result = service.list()
+		
+		then: "proper number of stories are returned"
+		result.size == theResultW
+		
+		
+		where:
+		luW		|	invW 	|	isAdminW	|	theResultW
+		"joe"	|	1		|	false		|	3
+		"admin"	|	1		|	true		|	6
+	
+		"jane"	|	1		|	false		|	6			//Jane is owner of private story
+		"bill"	|	1		|	false		|	3
+		"panda" |	1		|	false		|	4     		//panda is editor of a private story
+		"ann"	|	1		|	false		| 	4			//ann is a viewer of a private story
 
+	}
 @Unroll
     void "Testing Create Permission rules"() {
 		
@@ -170,35 +200,7 @@ class StorySecurelyServiceSpec extends Specification {
 		"joe"	|	"jane"	|	1	|	false		|	false		|	true		|	true			//isPublic is false but is Viewer
 		"bill"	|	"jane"	|	1	|	false		|	false		|	false		|	false			//isPublic is false not admin, not editor, not viewer
 		}
-	@Unroll
-	void "Testing List function"() {
-		given: "Mocked security functions, setting logged in user"
-		def lu = User.findByUsername(luW)
-		
-		def springSecurityService = Mock(SpringSecurityService)
-		invW * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
-		service.springSecurityService = springSecurityService
-		
-		SpringSecurityUtils.metaClass.'static'.ifAllGranted = { String role ->
-			return isAdminW }
-		
-		when: "function list() is called"
-		def result = service.list()
-		
-		then: "proper number of stories are returned"
-		result.size == theResultW
-		
-		where:
-		luW		|	invW 	|	isAdminW	|	theResultW			
-		"joe"	|	1		|	false		|	3			
-		"admin"	|	1		|	true		|	6			
-	
-		"jane"	|	1		|	false		|	6			//Jane is owner of private story		
-		"bill"	|	1		|	false		|	3
-		"panda" |	1		|	false		|	4     		//panda is editor of a private story
-		"ann"	|	1		|	false		| 	4			//ann is a viewer of a private story			
 
-	}
 	
 	
 }

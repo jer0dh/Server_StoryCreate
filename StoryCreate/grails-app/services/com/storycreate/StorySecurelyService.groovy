@@ -23,12 +23,31 @@ class StorySecurelyService {
 		} else {
 			def query = Story.where {
 				(isPublic == true) || (owner.id == currentUser.id ) ||
-				editors { id == currentUser.id} ||
-				viewers { id == currentUser.id}
+				(editors { user { id == currentUser.id}}) ||
+				(viewers { user {id == currentUser.id}})
 			}
 			return query.list(params)
 			
-			//Story.findAllWhere(isPublic:true, [max: params.max, offsite: params.offset])
+//			def c = Story.createCriteria()
+//			return c.list(params) {
+//				eq('isPublic',true)
+//			}
+			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])
+			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])
+		}
+	}
+	def list2(params) {
+		def currentUser = springSecurityService.currentUser
+		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
+		
+		if(isAdmin){
+			return Story.list(params)
+		} else {
+			def hql = "from Story as s left outer join s.editors as se where (s.owner.id = :currentUserId OR se.user.id= :currentUserId)"
+			def results = Story.executeQuery(hql,[currentUserId:currentUser.id])
+			return results
+			
+			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])
 		}
 	}
 	
