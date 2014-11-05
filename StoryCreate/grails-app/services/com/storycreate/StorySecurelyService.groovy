@@ -28,11 +28,6 @@ class StorySecurelyService {
 			}
 			return query.list(params)
 			
-//			def c = Story.createCriteria()
-//			return c.list(params) {
-//				eq('isPublic',true)
-//			}
-			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])
 			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])
 		}
 	}
