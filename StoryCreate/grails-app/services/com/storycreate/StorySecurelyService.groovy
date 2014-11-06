@@ -14,7 +14,7 @@ class StorySecurelyService {
 	def springSecurityService
 
 	// list returns a list of stories the currently logged in user can see		
-	def list(params) {
+	def list2(params) {
 		def currentUser = springSecurityService.currentUser
 		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
 		
@@ -31,15 +31,18 @@ class StorySecurelyService {
 			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])
 		}
 	}
-	def list2(params) {
+	def list(params) {
 		def currentUser = springSecurityService.currentUser
 		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
 		
 		if(isAdmin){
-			return Story.list(params)
+			return Story.list()
 		} else {
-			def hql = "from Story as s left outer join s.editors as se where (s.owner.id = :currentUserId OR se.user.id= :currentUserId)"
+			def hql = "from Story as s left outer join s.editors as se left outer join s.viewers as sv where (s.isPublic = true) OR (s.owner.id = :currentUserId) OR (se.user.id= :currentUserId) OR (sv.user.id = :currentUserId)"
 			def results = Story.executeQuery(hql,[currentUserId:currentUser.id])
+			if(results != null) { // return only the story objects
+				results = results.collect { it[0] }
+			}
 			return results
 			
 			//Story.findAllWhere(isPublic:true, [max: params.max, offset: params.offset])

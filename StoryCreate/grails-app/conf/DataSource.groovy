@@ -1,15 +1,8 @@
-//dataSource {
-//    pooled = true
-//    jmxExport = true
-//    driverClassName = "org.h2.Driver"
-//    username = "sa"
-//    password = ""
-//}
 dataSource {
     pooled = true
     jmxExport = true
-	driverClassName = "com.mysql.jdbc.Driver"
-    username = "root"
+    driverClassName = "org.h2.Driver"
+    username = "sa"
     password = ""
 }
 hibernate {
@@ -23,13 +16,9 @@ hibernate {
 // environment specific settings
 environments {
     development {
-//        dataSource {
-//            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-//            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
-//        }
         dataSource {
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
+            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
         }
     }
     test {
@@ -37,7 +26,13 @@ environments {
             dbCreate = "create-drop"
             url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
         }
-    }
+    }//dataSource {
+//    pooled = true
+//    jmxExport = true
+//	driverClassName = "com.mysql.jdbc.Driver"
+//    username = "root"
+//    password = ""
+//}
 //hibernate {
 //    cache.use_second_level_cache = true
 //    cache.use_query_cache = false
@@ -49,7 +44,10 @@ environments {
 //// environment specific settings
 //environments {
 //    development {
-
+//        dataSource {
+//            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+//            url = "jdbc:mysql://localhost:3306/storyCreate?autoReconnect=true"
+//        }
 //    }
 //    test {
 //        dataSource {

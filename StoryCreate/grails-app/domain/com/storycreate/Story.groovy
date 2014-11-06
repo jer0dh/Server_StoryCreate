@@ -6,7 +6,7 @@ class Story {
 	
 	String title
 	Date dateCreated
-	Date lastUpdated
+//	Date lastUpdated
 	String description
 	Boolean isPublic
 	List storyContent = []
