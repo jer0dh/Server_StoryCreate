@@ -6,8 +6,9 @@ class BootStrap {
 
     def init = { servletContext ->
 		println("bootstrap")
+		println("test phase ${System.properties['grails.test.phase']}")
 		
-		if (Environment.current != Environment.TEST) {
+		if (Environment.current != Environment.TEST || System.properties['grails.test.phase'] == "functional") {
 			if (User.count() == 0){
 				println("adding data")
 				def adminUser = new User(username:"admin", password: "password").save(failOnError:true)
@@ -59,11 +60,11 @@ class BootStrap {
 														 },
 			 editors				:	    s.editors.collect {e ->
 															 [	id				:	e.id,
-															 name			:	e.profile?.fullName ?: e.username]
+															 name			:	e.user.profile?.fullName ?: e.user.username]
 															 },
 			 viewers				:		s.viewers.collect {v ->
 															 [	id				:	v.id,
-																 name		:	v.profile?.fullName ?: v.username]
+																 name		:	v.user.profile?.fullName ?: v.user.username]
 															 }
 			]
 		   }

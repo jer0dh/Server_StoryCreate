@@ -36,12 +36,17 @@ class StorySecurelyService {
 		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
 		
 		if(isAdmin){
-			return Story.list()
+			return Story.list(params)
 		} else {
 			def hql = "from Story as s left outer join s.editors as se left outer join s.viewers as sv where (s.isPublic = true) OR (s.owner.id = :currentUserId) OR (se.user.id= :currentUserId) OR (sv.user.id = :currentUserId)"
-			def results = Story.executeQuery(hql,[currentUserId:currentUser.id])
+			def results
+			if(params != null) {
+				results = Story.executeQuery(hql,[currentUserId:currentUser.id],params)
+			} else {
+				results = Story.executeQuery(hql,[currentUserId:currentUser.id])
+			}
 			if(results != null) { // return only the story objects
-				results = results.collect { it[0] }
+				results = results.collect { it[0] }.unique()
 			}
 			return results
 			

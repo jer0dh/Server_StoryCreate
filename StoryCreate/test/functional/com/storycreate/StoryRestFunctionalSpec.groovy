@@ -11,6 +11,7 @@ class StoryRestFunctionalSpec extends Specification{
 	def adminCreds = ["username":"admin","password":"password"]
 	def userCreds = ["username":"joe","password":"password"]
 	
+	
 	void "GET as ROLE_admin returns list of Story JSON without storyContent"() {
 		when: "Obtaining access_token for username: admin from api/login"
 		def resp = login(adminCreds)
@@ -24,8 +25,8 @@ class StoryRestFunctionalSpec extends Specification{
 		println (resp.json)
 		
 		then: "view list of Storys without storyContent"
-		resp.json[0].title == 'The very First Story'
-		resp.json[1].title == 'The Storm'
+		resp.json[0].title == 'Story1'
+		resp.json[1].title == 'Story2'
 		resp.json[0].storyContent == null
 		resp.json[1].storyContent == null
 		
@@ -44,8 +45,8 @@ class StoryRestFunctionalSpec extends Specification{
 		println (resp.json)
 		
 		then: "view list of Storys without storyContent"
-		resp.json[0].title == 'The very First Story'
-		resp.json[1].title == 'The Storm'
+		resp.json[0].title == 'Story1'
+		resp.json[1].title == 'Story2'
 		resp.json[0].storyContent == null
 		resp.json[1].storyContent == null
 		
@@ -64,7 +65,7 @@ class StoryRestFunctionalSpec extends Specification{
 		println (resp.json)
 		
 		then: "view list of Storys without storyContent"
-		resp.json.title == 'The very First Story'
+		resp.json.title == 'Story1'
 		resp.json.storyContent != null
 		resp.json.storyContent[0].content.contains("Nam eleifend libero quis feugiat") 
 		
@@ -465,11 +466,11 @@ class StoryRestFunctionalSpec extends Specification{
 	def newStoryContent(userId, userId2){
 		return [[
 			content			:		"This is the first chapter of my story.  Wow!",
-			user			:		[id  :  userId],
+			author			:		[id  :  userId],
 			],
 		[
 			content			:		"This is the second chapter of my story.  cool!",
-			user			:		[id  :  userId2],
+			author			:		[id  :  userId2],
 			]]
 	}
 
@@ -517,5 +518,6 @@ class StoryRestFunctionalSpec extends Specification{
 		resp.json instanceof JSONObject
 		return resp
 	}
+
 
 }

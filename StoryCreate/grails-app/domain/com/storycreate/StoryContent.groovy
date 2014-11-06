@@ -3,8 +3,8 @@ package com.storycreate
 class StoryContent {
 	User author
 	String content
-//	Date dateCreated
-//	Date lastUpdated
+	Date dateCreated
+	Date lastUpdated
 	
 	static belongsTo = [ story : Story]
 	

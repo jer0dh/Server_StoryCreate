@@ -132,4 +132,38 @@ class StorySecurelyServiceIntegrationSpec extends Specification {
 			results*.title == ["Story1", "Story2", "Story3", "Story4", "Story5"]
 
 	}
+	void "Testing LU as admin with params"() {
+		when: "Listing stories as Joe"
+			def results
+			def stories
+			def params = [max: 2, offset: 1]
+
+			SpringSecurityUtils.doWithAuth("admin") {
+				results = storySecurelyService.list(params)
+			}
+
+			println(results*.title)
+			
+		then: ""
+			results.size() == 2
+			results*.title == ["Story2", "Story3"]
+
+	}
+	void "Testing LU as joe with params"() {
+		when: "Listing stories as Joe"
+			def results
+			def stories
+			def params = [max: 2, offset: 1]
+
+			SpringSecurityUtils.doWithAuth("joe") {
+				results = storySecurelyService.list(params)
+			}
+
+			println(results*.title)
+			
+		then: ""
+			results.size() == 2
+			results*.title == ["Story2", "Story3"]
+
+	}
 }

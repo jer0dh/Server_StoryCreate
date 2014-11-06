@@ -12,6 +12,7 @@ class StoryRestController extends RestfulController{
 
 	static responseFormats = ['json']
 	def springSecurityService
+	def storySecurelyService
 	
     StoryRestController() {
 		super(Story)
@@ -20,7 +21,7 @@ class StoryRestController extends RestfulController{
 	def index(Integer max){
 		params.max = Math.min(max ?: 10, 100)
 		JSON.use("storyList") {
-			respond Story.list(params), model: ["storyCount" : Story.count ]
+			respond storySecurelyService.list(params) //, model: ["storyCount" : Story.count ]
 		} 			
 	}
 	
@@ -30,22 +31,14 @@ class StoryRestController extends RestfulController{
 			respondError(404,"Story not found")
 			return
 		}
-		if( SpringSecurityUtils.ifAllGranted("ROLE_admin")){
+		if( storySecurelyService.retrieve(story)){
 			respond story
 			return
-		}
-		if(story.isPublic){
-			respond story
 		} else {
-			def currentUser = springSecurityService.currentUser;
-			if (currentUser.id == story.owner.id) {
-				respond story
-			} else {
-				def error = ["errors":["message" : "Story is set to private"]]
-				respond error, [status : 405] //Method not allowed on resource
-			}
-		}		
+			respond error, [status : 405]
+		}
 	}  // def show()
+	
 	
 	@Transactional
 	def save() {
@@ -73,21 +66,19 @@ class StoryRestController extends RestfulController{
 		}
 		
 		// if story owner not currentUser and currentUser not ROLE_admin - error
-		def currentUser = springSecurityService.currentUser;
-		if(story.owner.id != currentUser.id && !SpringSecurityUtils.ifAllGranted("ROLE_admin")){
-			respondError(405,"Story owner must equal to the user logged in")
+		if( ! storySecurelyService.create(story)) {
+			respondError(405,"Permissions issue")
 			return
 		}
 
 		if (storyContent != null){
 			println("there is storycontent")
-			// test to make sure user saving is only saving content with user as currentuser
-			// All content must be same owner
-//			if (storyContent*.user.id.unique() != [currentUser.id]){
-//				respondError(405,"Cannot save storyContent as other users")
-//				return
-//			}
 			storyContent.each {sc ->
+				sc.validate()
+				if (sc.hasErrors()) {
+					response.status = 422
+					respond sc.errors
+				}
 				story.addToStoryContent(sc)
 			}
 		}
@@ -95,6 +86,7 @@ class StoryRestController extends RestfulController{
 		response.status = 200
 		respond story
 	}
+	
 @Transactional
 	def update(StoryCommand updatedStory) {
 //		def updatedStory = createResource()
