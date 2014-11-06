@@ -8,7 +8,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 /**
  *
  */
-class StorySecurelyServiceSpec extends Specification {
+class StorySecurelyServiceIntegrationSpec extends Specification {
 	def storySecurelyService
 	
 	 void setup() {
