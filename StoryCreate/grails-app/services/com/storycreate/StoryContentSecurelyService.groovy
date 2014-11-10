@@ -12,15 +12,31 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 class StoryContentSecurelyService {
 	def springSecurityService
 	
+	def list(params) {
+		def currentUser = springSecurityService.currentUser
+		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
+		
+		if(isAdmin){
+			return StoryContent.list(params)
+		} else {
+			def query = StoryContent.where {
+				author.id == currentUser.id
+			}
+			return query.list(params)
+		}
+	}
+	
     def update(sc) {
 		def currentUser = springSecurityService.currentUser
 		def isAdmin = SpringSecurityUtils.ifAllGranted("ROLE_admin")
 		def isOwner = sc.story.isOwner(currentUser)
 		def isEditor = sc.story.isEditor(currentUser)
 		def isAuthor = (currentUser.id == sc.author.id)
+		def isPublic = sc.story.isPublic
 		
-		// if isAdmin, then permitted.  Otherwise must be author of sc and be owner or editor of story
-		if (isAdmin || (isAuthor && (isOwner || isEditor)) ){
+		
+		// if isAdmin, then permitted.  Otherwise must be author of sc and story must be public or user must be owner or editor of story
+		if (isAdmin || (isAuthor && (isPublic || isOwner || isEditor)) ){
 			return true
 		  // sc.save()
 		} else {

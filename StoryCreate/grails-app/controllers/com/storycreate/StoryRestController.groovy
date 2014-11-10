@@ -74,11 +74,6 @@ class StoryRestController extends RestfulController{
 		if (storyContent != null){
 			println("there is storycontent")
 			storyContent.each {sc ->
-				sc.validate()
-				if (sc.hasErrors()) {
-					response.status = 422
-					respond sc.errors
-				}
 				story.addToStoryContent(sc)
 			}
 		}
@@ -86,18 +81,15 @@ class StoryRestController extends RestfulController{
 		response.status = 200
 		respond story
 	}
-	
+
 @Transactional
 	def update(StoryCommand updatedStory) {
-//		def updatedStory = createResource()
-		println("${updatedStory}")
+
 		def story = Story.get(params.id)
 		if (story == null){
 			respondError(404,"Story ${id} was not found")
 			return
 		}
-		println(updatedStory.dump())
-		println(updatedStory.owner.dump())
 		
 		// if a user comes in with a nonexistent id, Grails creates an unsaved User and makes the id = null
 		if (updatedStory.owner.id == null && updatedStory.owner != null){
@@ -105,20 +97,6 @@ class StoryRestController extends RestfulController{
 			return
 		}
 		
-		if (!SpringSecurityUtils.ifAllGranted('ROLE_admin')){
-			def currentUser = springSecurityService.currentUser;
-			if (updatedStory.owner != null) {
-				if (updatedStory.owner.id != story.owner.id || updatedStory.owner.id != currentUser.id) {
-					respondError(405,"Story owner must equal to the user logged in")
-					return
-				} else {
-					if(story.owner.id != currentUser.id ){
-						respondError(405,"Story owner must equal to the user logged in 2")
-						return
-					}
-				}
-			}
-		}
 		story.properties = updatedStory
 		story.validate()
 		if( story.hasErrors() ) {
@@ -127,11 +105,16 @@ class StoryRestController extends RestfulController{
 			return
 		}
 		
-		story.save(flush: true)
-		
-		response.status = 200
-		respond story
+		if(storySecurelyService.update(story)){
+			story.save(flush: true)
+			response.status = 200
+			respond story
+		} else {
+		respondError(405, "Permissions issue")
+		}
+
 	}
+	
 	@Transactional
 	def delete() {
 		def story = Story.get(params.id)
@@ -140,22 +123,13 @@ class StoryRestController extends RestfulController{
 			respondError(404,message)
 			return
 		}
-		def title = story.title
-		def storyId = story.id
-		
-		// if not admin user, then make sure owner of story is same as logged in user
-		if (!SpringSecurityUtils.ifAllGranted('ROLE_admin')){
-			def currentUser = springSecurityService.currentUser;
-			if(story.owner.id != currentUser.id ){
-				respondError(405,"Story owner must equal to the user logged in when deleting story")
-				return
-			}
+
+		if(storySecurelyService.delete(story)) {
+			story.delete(flush: true)
+			respondSuccess(200, "Story deleted")
+		} else {
+			respondError(405, "Permissions issue")
 		}
-		
-		story.delete(flush: true)
-		def message = "Story deleted. id: " + storyId + ", Title: " + title
-		respondSuccess(200, message)
-		
 	}
 	def respondError(status, message){
 		def error = ["errors" : [["message" : message]]]

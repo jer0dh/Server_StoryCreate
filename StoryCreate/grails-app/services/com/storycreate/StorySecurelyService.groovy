@@ -2,6 +2,7 @@ package com.storycreate
 
 import grails.transaction.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
+//TODO Possibly add new boolean to determine if publicly viewable, but only editors and owners can edit
 
 // Will check permissions to see if a Story can be added, viewed, deleted, or updated
 // Returns boolean value

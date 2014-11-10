@@ -340,7 +340,6 @@ class StoryRestFunctionalSpec extends Specification{
 		resp.json.id == null
 		resp.json.title == null
 		resp.status == 405
-		resp.json.errors[0].message == "Story owner must equal to the user logged in"
 	}
 	void "update() the title of an existing story with StoryContent by admin as admin"() {
 		when: "Obtaining access_token for username: admin from api/login"

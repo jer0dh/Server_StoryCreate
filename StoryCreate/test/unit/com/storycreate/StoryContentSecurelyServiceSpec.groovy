@@ -45,6 +45,27 @@ class StoryContentSecurelyServiceSpec extends Specification {
 //		Story.clear()
     }
 @Unroll
+	void "Testing index"() {
+		given: "Mocked security functions, setting logged in user:"
+		def lu = User.findByUsername(luW)
+		
+		def springSecurityService = Mock(SpringSecurityService)
+		1 * springSecurityService.getCurrentUser() >> User.findByUsername(luW)
+		service.springSecurityService = springSecurityService
+		SpringSecurityUtils.metaClass.'static'.ifAllGranted = { String role ->
+			return isAdminW }
+		when: "List function is called"
+		def result = service.list()
+		
+		then:"the correct number of Story contents are returned"
+		result.size() == theResultW
+		
+		where:
+		luW		|		isAdminW		|		theResultW
+		"joe"	|		false			|		2
+		"admin"	|		true			|		6
+	}
+@Unroll
     void "Testing Update/Create Permission rules"() {
 		
 		given: "Mocked security functions, setting logged in user: #luW and story with owner: #ownW"
