@@ -57,16 +57,16 @@ class Story {
 	
 	// Start of methods for Roles
 	
-//	def beforeDelete() {
-//		def story = this
-//		Story.withNewSession {
-//			println("beforeDelete: " + story.dump())
-//	//		Editor.removeAll(story, true)
-//			println("Returned from Editor.removeAll in Story.beforeDelete()")
-//			Viewer.removeAll(story, true)
-//			println("Returned from Viewer.removeAll in Story.beforeDelete()")
-//		}
-//	}
+	def beforeDelete() {
+		def story = this
+		Story.withNewSession {
+			println("beforeDelete: " + story.dump())
+			Editor.removeAll(story, true)
+			println("Returned from Editor.removeAll in Story.beforeDelete()")
+			Viewer.removeAll(story, true)
+			println("Returned from Viewer.removeAll in Story.beforeDelete()")
+		}
+	}
 	
 //	// Editors
 //	

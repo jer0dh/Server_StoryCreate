@@ -21,4 +21,19 @@ class Viewer {
 		println("viewers: ${Viewer.count()}")
 		println('finished Viewer.removeAll(user)')
 }
+	static void removeAll(Story s, boolean flush = false) {
+		println("Viewers: ${Viewer.count()}")
+		println("In Viewers.removeAll(story)")
+		if (s == null) return
+
+//			Editor.executeUpdate("delete Editor e where e.user = :userid", [userid : User.load(u.id)])
+//			Editor.where {
+//				story.id == s.id
+//			}.deleteAll()
+		def viewers = Viewer.findAllByStory(s)
+		viewers*.delete()
+		if (flush) { Viewer.withSession { it.flush() } }
+		println("Viewers: ${Viewer.count()}")
+		println('finished Viewer.removeAll(story)')
+}
 }

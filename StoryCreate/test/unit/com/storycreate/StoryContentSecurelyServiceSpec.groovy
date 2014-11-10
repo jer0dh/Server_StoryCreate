@@ -93,9 +93,8 @@ class StoryContentSecurelyServiceSpec extends Specification {
 		"joe"	|		"joe"		|		false			|		false			|		"asparagus"	|			true			//when lu is Owner of story and Author of SC
 		"joe"	|		"admin"		|		true			|		false			|		"cranberry"	|			true			//when lu is Editor of story and Author of SC
 		"admin"	|		"joe"		|		false			|		true			|		"cranberry"	|			true			//when lu is Admin and not Author of SC
-		
 		"joe"	|		"joe"		|		false			|		false			|		"carrot"	|			false			//when lu is Owner of story but not Author and not admin
-		"joe"	|		"admin"		|		false			|		false			|		"cranberry"	|			false			//when lu is not Owner, not Editor, not Admin and is Author of SC
+		"joe"	|		"admin"		|		false			|		false			|		"cranberry"	|			true			//when lu is not Owner, not Editor, not Admin and is Author of SC
 		
 	}
 	
