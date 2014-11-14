@@ -11,6 +11,7 @@ class UrlMappings {
         "500"(view:'/error')
 		"/api/story"(resources:'storyRest')
 		"/api/user"(resources: 'userRest')
+		"/api/me" (controller: 'userRest', action:'getMe')
 		"/api/storyContent"(resources: 'storyContentRest')
 	}
 }

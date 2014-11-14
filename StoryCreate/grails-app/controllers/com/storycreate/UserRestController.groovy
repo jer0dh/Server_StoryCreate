@@ -12,7 +12,9 @@ class UserRestController extends RestfulController{
 		super(User)
 	}
 	// TODO - need to add if user logged in is equal to request id, then return email address as well
-	
+	def getMe() {
+		respond springSecurityService.getCurrentUser()
+	}
 	@Override
 	def index(Integer max) { 
 		if( SpringSecurityUtils.ifAllGranted("ROLE_admin")){
@@ -24,12 +26,13 @@ class UserRestController extends RestfulController{
 			response.status = 404;
 		}
 	}
+
 	@Override
 	def show() {
 		log.debug("In show()")
 		def currentUser = springSecurityService.currentUser;
-		if(params.int('id') == currentUser.id) {
-			log.debug("user id's are equal")
+		if(params['id'] == null || params.int('id') == currentUser.id) {
+			log.debug("id is null or user id's are equal")
 			JSON.use("userListForAdmin") {
 			respond currentUser
 			}
