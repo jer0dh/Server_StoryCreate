@@ -97,22 +97,20 @@ class StoryRestController extends RestfulController{
 			return
 		}
 		
-		story.properties = updatedStory
-		story.validate()
-		if( story.hasErrors() ) {
+		if( updatedStory.hasErrors() ) {
 			response.status = 422
-			respond story.errors
+			respond updatedStory.errors
 			return
 		}
 		
 		if(storySecurelyService.update(story)){
+			story.properties = updatedStory
 			story.save(flush: true)
 			response.status = 200
 			respond story
 		} else {
-		respondError(405, "Permissions issue")
+			respondError(405, "Permissions issue")
 		}
-
 	}
 	
 	@Transactional
@@ -146,10 +144,14 @@ class StoryRestController extends RestfulController{
 		return
 	}
 }
-
+@grails.validation.Validateable
 class StoryCommand {
 	String title
 	User owner
 	String description
 	Boolean isPublic
+	
+	static contraints = {
+	importFrom Story	
+	}
 }
